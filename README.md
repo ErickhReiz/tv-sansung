@@ -1,96 +1,87 @@
-# Controle Remoto TV Samsung
+# Controle Remoto para TV Samsung
 
-Interface web para controlar sua TV Samsung através da rede local.
-
-## Requisitos
-
-- Node.js instalado
-- TV Samsung na mesma rede local
-- Acesso à rede local
-
-## Instalação
-
-1. Clone ou baixe este repositório
-2. Instale as dependências:```bash
-npm install
-```
-
-## Uso
-
-1. Inicie o servidor:
-```bash
-npm start
-```
-
-2. Acesse a interface web:
-- No seu computador: http://localhost:5555
-- No seu celular: http://192.168.15.14:5555
+Um controle remoto web para TVs Samsung que permite controlar sua TV através de qualquer dispositivo com navegador na mesma rede local.
 
 ## Funcionalidades
 
-- Ligar/Desligar TV
-- Controle de Volume
-- Controle de Canais
-- Navegação (Setas)
-- Botão OK
+- Controle básico da TV (ligar/desligar, volume, navegação, etc.)
+- Acesso rápido a aplicativos populares (Netflix, YouTube, Spotify, Globoplay)
+- Controles adicionais (botões coloridos, teclado numérico, etc.)
+- Interface responsiva otimizada para dispositivos móveis
+- QR Code para compartilhar o controle com outros dispositivos
+- Configuração fácil da URL do servidor
 
-## Notas
+## Requisitos
 
-- Certifique-se de que sua TV Samsung está na mesma rede local
-- O servidor está configurado para rodar na porta 5555
-- A interface é responsiva e funciona em dispositivos móveis 
+- Node.js
+- TV Samsung com suporte a controle remoto via rede (TVs Smart Samsung com sistema Tizen)
+- TV e dispositivo de controle na mesma rede local
 
+## Como usar
 
-🛠️ Enviando Comandos
-## Formato do Payload
-```json
-{
-    "method": "ms.remote.control",
-    "params": {
-        "Cmd": "Click",
-        "DataOfCmd": "KEY_VOLUMEDOWN",
-        "Option": "false",
-        "TypeOfRemote": "SendRemoteKey"
-    }
-}
-```
-## Exemplo de Envio
+1. Clone este repositório:
+   ```
+   git clone https://github.com/seu-usuario/controle-tv-samsung.git
+   cd controle-tv-samsung
+   ```
 
-```javascript
-const payload = {
-    method: 'ms.remote.control',
-    params: {
-        Cmd: 'Click',
-        DataOfCmd: 'KEY_VOLUMEDOWN',
-        Option: 'false',
-        TypeOfRemote: 'SendRemoteKey'
-    }
-};
-ws.send(JSON.stringify(payload));
-```
-## 📚 Lista de Comandos Comuns
-```bash
-KEY_POWER: Alterna o estado de energia da TV
+2. Instale as dependências:
+   ```
+   npm install
+   ```
 
-KEY_VOLUP: Aumenta o volume
+3. Configure o IP da sua TV:
+   Abra o arquivo `server.js` e altere a constante `TV_IP` para o endereço IP da sua TV:
+   ```javascript
+   const TV_IP = '192.168.15.5'; // Altere para o IP da sua TV
+   ```
 
-KEY_VOLDOWN: Diminui o volume
+4. Inicie o servidor:
+   ```
+   node server.js
+   ```
 
-KEY_MUTE: Ativa/desativa o mudo
+5. Acesse o controle remoto:
+   Abra o navegador em qualquer dispositivo na mesma rede local e acesse:
+   ```
+   http://IP_DO_SEU_SERVIDOR:5555
+   ```
 
-KEY_CHUP: Avança o canal
+6. Na primeira vez que você usar o controle, pode ser necessário aceitar a conexão na TV.
 
-KEY_CHDOWN: Retrocede o canal
+## Compartilhando o controle
 
-KEY_HOME: Retorna à tela inicial
+Você pode compartilhar facilmente o controle com outros dispositivos na mesma rede:
 
-KEY_MENU: Abre o menu
+1. Acesse a aba "Mais" no controle remoto
+2. Escaneie o QR code com outro dispositivo
+3. O novo dispositivo terá acesso ao controle remoto
 
-KEY_SOURCE: Alterna a fonte de entrada
+## Personalização
 
-KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT: Navegação
+Você pode personalizar a URL do servidor na aba "Mais" > "Configurações". Isso é útil se você estiver usando um IP diferente ou quiser acessar o controle de outra rede (com as configurações de rede apropriadas).
 
-KEY_ENTER: Seleciona/Confirma
+## Comandos suportados
 
-KEY_BACK: Retorna à tela anterior
-```
+O controle suporta diversos comandos para a TV Samsung, incluindo:
+
+- Controles básicos: Power, Volume, Navegação
+- Controles de mídia: Play, Pause, Avançar, Retroceder
+- Botões coloridos: Vermelho (A), Verde (B), Amarelo (C), Azul (D)
+- Aplicativos: Netflix, YouTube, Spotify, Globoplay
+- Outros: Menu, Home, Voltar, Guia, Informações
+
+## Tecnologias utilizadas
+
+- Node.js com Express para o servidor
+- WebSocket para comunicação com a TV
+- HTML, CSS e JavaScript puro para o frontend
+- Bootstrap Icons para ícones
+
+## Contribuições
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para mais detalhes.

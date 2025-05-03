@@ -3,27 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Controle TV Samsung</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- QR Code Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #121212;
       color: #ffffff;
       margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    .container {
+      flex: 1;
       padding: 20px;
+      padding-bottom: 80px; /* Space for navbar */
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
     }
-    .container {
-      max-width: 300px;
+    
+    .remote-container {
+      max-width: 100%;
       width: 100%;
       background-color: #1e1e1e;
-      border-radius: 25px;
+      border-radius: 25px 25px 0 0;
       padding: 20px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
+    
     .status {
       text-align: center;
       margin-bottom: 20px;
@@ -32,130 +50,475 @@
       background-color: #2d2d2d;
       font-size: 14px;
     }
-    .power-section {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .navigation-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .nav-circle {
-      width: 150px;
-      height: 150px;
-      position: relative;
-      margin: 20px 0;
-    }
-    .nav-btn {
-      position: absolute;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      border: none;
-      background-color: #3498db;
-      color: white;
-      cursor: pointer;
-      font-size: 20px;
-    }
-    .nav-btn.up { top: 0; left: 50%; transform: translateX(-50%); }
-    .nav-btn.down { bottom: 0; left: 50%; transform: translateX(-50%); }
-    .nav-btn.left { left: 0; top: 50%; transform: translateY(-50%); }
-    .nav-btn.right { right: 0; top: 50%; transform: translateY(-50%); }
-    .nav-btn.center {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #2ecc71;
-    }
-    .volume-channel-section {
+    
+    .btn-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
       margin-bottom: 20px;
     }
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    
     .btn {
-      padding: 12px;
-      font-size: 14px;
+      padding: 15px 10px;
+      font-size: 18px;
       border: none;
-      border-radius: 50px;
+      border-radius: 12px;
       color: white;
       cursor: pointer;
       transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      touch-action: manipulation;
     }
+    
+    .btn-lg {
+      grid-column: span 3;
+    }
+    
     .power-btn {
       background-color: #e74c3c;
-      width: 45%;
     }
-    .volume-btn {
+    
+    .nav-btn {
+      background-color: #3498db;
+    }
+    
+    .control-btn {
       background-color: #2ecc71;
     }
-    .channel-btn {
+    
+    .menu-btn {
+      background-color: #9b59b6;
+    }
+    
+    .app-btn {
       background-color: #f39c12;
     }
+    
+    .number-btn {
+      background-color: #34495e;
+    }
+    
     .btn:active {
       transform: scale(0.95);
+      opacity: 0.8;
     }
-    @media (max-width: 340px) {
-      .container {
-        padding: 15px;
-      }
-      .nav-circle {
-        width: 120px;
-        height: 120px;
-      }
-      .nav-btn {
-        width: 35px;
-        height: 35px;
-        font-size: 16px;
-      }
+    
+    .navigation-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
     }
+    
+    .navigation-pad .btn:nth-child(2) { grid-column: 2; }
+    .navigation-pad .btn:nth-child(4) { grid-column: 1; }
+    .navigation-pad .btn:nth-child(5) { grid-column: 2; }
+    .navigation-pad .btn:nth-child(6) { grid-column: 3; }
+    .navigation-pad .btn:nth-child(8) { grid-column: 2; }
+    
+    .media-controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .volume-controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #1e1e1e;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 12px;
+      padding: 8px 0;
+      width: 33.33%;
+      text-align: center;
+    }
+    
+    .nav-item.active {
+      color: #3498db;
+    }
+    
+    .nav-item i {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    
+    .tab-content {
+      display: none;
+      width: 100%;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 14px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #ffffff;
+      border-radius: 10px;
+    }
+    
+    .qr-code {
+      margin-bottom: 10px;
+    }
+    
+    .qr-text {
+      color: #333;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .settings-container {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #2d2d2d;
+      border-radius: 10px;
+    }
+    
+    .settings-input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #3d3d3d;
+      color: white;
+    }
+    
+    .settings-btn {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .color-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .red-btn { background-color: #e74c3c; }
+    .green-btn { background-color: #2ecc71; }
+    .yellow-btn { background-color: #f1c40f; }
+    .blue-btn { background-color: #3498db; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="status" id="status">
-      Conectando ao servidor...
-    </div>
-    
-    <div class="power-section">
-      <button class="btn power-btn" onclick="sendCommand('POWERON')">Ligar</button>
-      <button class="btn power-btn" onclick="sendCommand('POWEROFF')">Desligar</button>
-    </div>
-
-    <div class="volume-channel-section">
-      <div class="control-group">
-        <button class="btn volume-btn" onclick="sendCommand('VOLUP')">Volume +</button>
-        <button class="btn volume-btn" onclick="sendCommand('VOLDOWN')">Volume -</button>
+    <div class="remote-container">
+      <div class="status" id="status">
+        Conectando ao servidor...
       </div>
-      <div class="control-group">
-        <button class="btn channel-btn" onclick="sendCommand('CHUP')">Canal +</button>
-        <button class="btn channel-btn" onclick="sendCommand('CHDOWN')">Canal -</button>
+      
+      <div class="tab-content active" id="tab-basic">
+        <!-- Power Button -->
+        <div class="btn-grid">
+          <button class="btn power-btn btn-lg" onclick="sendCommand('POWEROFF')">
+            <i class="bi bi-power"></i> Power
+          </button>
+        </div>
+        
+        <!-- Volume Controls -->
+        <div class="volume-controls">
+          <button class="btn control-btn" onclick="sendCommand('VOLDOWN')">
+            <i class="bi bi-volume-down"></i>
+          </button>
+          <button class="btn control-btn" onclick="sendCommand('MUTE')">
+            <i class="bi bi-volume-mute"></i>
+          </button>
+          <button class="btn control-btn" onclick="sendCommand('VOLUP')">
+            <i class="bi bi-volume-up"></i>
+          </button>
+        </div>
+        
+        <!-- Media Controls -->
+        <div class="media-controls">
+          <button class="btn control-btn" onclick="sendCommand('REWIND')">
+            <i class="bi bi-rewind-fill"></i>
+          </button>
+          <button class="btn control-btn" onclick="sendCommand('PLAY')">
+            <i class="bi bi-play-fill"></i>
+          </button>
+          <button class="btn control-btn" onclick="sendCommand('FF')">
+            <i class="bi bi-fast-forward-fill"></i>
+          </button>
+        </div>
+        
+        <!-- Navigation Pad -->
+        <div class="navigation-pad">
+          <div></div>
+          <button class="btn nav-btn" onclick="sendCommand('UP')">
+            <i class="bi bi-arrow-up"></i>
+          </button>
+          <div></div>
+          
+          <button class="btn nav-btn" onclick="sendCommand('LEFT')">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+          <button class="btn nav-btn" onclick="sendCommand('ENTER')">
+            <i class="bi bi-check2-circle"></i>
+          </button>
+          <button class="btn nav-btn" onclick="sendCommand('RIGHT')">
+            <i class="bi bi-arrow-right"></i>
+          </button>
+          
+          <div></div>
+          <button class="btn nav-btn" onclick="sendCommand('DOWN')">
+            <i class="bi bi-arrow-down"></i>
+          </button>
+          <div></div>
+        </div>
+        
+        <!-- Menu Controls -->
+        <div class="btn-grid">
+          <button class="btn menu-btn" onclick="sendCommand('MENU')">
+            <i class="bi bi-list"></i> Menu
+          </button>
+          
+          <button class="btn menu-btn" onclick="sendCommand('SOURCE')">
+            <i class="bi bi-house"></i> Home
+          </button>
+          <button class="btn menu-btn" onclick="sendCommand('RETURN')">
+            <i class="bi bi-arrow-return-left"></i> Back
+          </button>
+        </div>
       </div>
-    </div>
-
-    <div class="navigation-section">
-      <div class="nav-circle">
-        <button class="nav-btn up" onclick="sendCommand('UP')">▲</button>
-        <button class="nav-btn right" onclick="sendCommand('RIGHT')">▶</button>
-        <button class="nav-btn down" onclick="sendCommand('DOWN')">▼</button>
-        <button class="nav-btn left" onclick="sendCommand('LEFT')">◀</button>
-        <button class="nav-btn center" onclick="sendCommand('ENTER')">OK</button>
+      
+      <div class="tab-content" id="tab-apps">
+        <div class="section-title">APLICATIVOS</div>
+        
+        <div class="btn-grid">
+          <button class="btn app-btn" onclick="sendCommand('APP_NETFLIX')">
+            <i class="bi bi-play-circle"></i> Netflix
+          </button>
+          <button class="btn app-btn" onclick="sendCommand('APP_YOUTUBE')">
+            <i class="bi bi-youtube"></i> YouTube
+          </button>
+          <button class="btn app-btn" onclick="sendCommand('APP_SPOTIFY')">
+            <i class="bi bi-spotify"></i> Spotify
+          </button>
+          <button class="btn app-btn" onclick="sendCommand('APP_GLOBOPLAY')">
+            <i class="bi bi-play-circle"></i> Globoplay
+          </button>
+        </div>
+        
+        <div class="section-title">FONTES</div>
+        
+        <div class="btn-grid">
+          <button class="btn menu-btn" onclick="sendCommand('DTV')">
+            <i class="bi bi-tv"></i> TV
+          </button>
+          <button class="btn menu-btn" onclick="sendCommand('HDMI')">
+            <i class="bi bi-hdmi"></i> HDMI
+          </button>
+        </div>
+      </div>
+      
+      <div class="tab-content" id="tab-more">
+        <div class="section-title">CONTROLES ADICIONAIS</div>
+        
+        <!-- QR Code Section -->
+        <div class="section-title">COMPARTILHAR</div>
+        <div class="qr-container">
+          <div id="qrcode" class="qr-code"></div>
+          <div class="qr-text">Escaneie para controlar a TV</div>
+          <div class="qr-text" id="server-url"></div>
+        </div>
+        
+        <!-- Settings Section -->
+        <div class="section-title">CONFIGURAÇÕES</div>
+        <div class="settings-container">
+          <input type="text" id="server-url-input" class="settings-input" placeholder="URL do servidor (ex: http://192.168.15.14:5555)">
+          <button class="settings-btn" onclick="updateServerUrlFromInput()">Atualizar URL</button>
+        </div>
+        
+        <!-- Color Buttons -->
+        <div class="color-buttons">
+          <button class="btn red-btn" onclick="sendCommand('RED')">
+            A
+          </button>
+          <button class="btn green-btn" onclick="sendCommand('GREEN')">
+            B
+          </button>
+          <button class="btn yellow-btn" onclick="sendCommand('YELLOW')">
+            C
+          </button>
+          <button class="btn blue-btn" onclick="sendCommand('BLUE')">
+            D
+          </button>
+        </div>
+        
+        <!-- Channel Controls -->
+        <div class="btn-grid">
+          <button class="btn control-btn" onclick="sendCommand('CHUP')">
+            <i class="bi bi-caret-up-fill"></i> CH+
+          </button>
+          <button class="btn control-btn" onclick="sendCommand('CH_LIST')">
+            <i class="bi bi-list-ol"></i> Lista
+          </button>
+          <button class="btn control-btn" onclick="sendCommand('CHDOWN')">
+            <i class="bi bi-caret-down-fill"></i> CH-
+          </button>
+        </div>
+        
+        <!-- Info Controls -->
+        <div class="btn-grid">
+          <button class="btn menu-btn" onclick="sendCommand('INFO')">
+            <i class="bi bi-info-circle"></i> Info
+          </button>
+          <button class="btn menu-btn" onclick="sendCommand('GUIDE')">
+            <i class="bi bi-journal-text"></i> Guia
+          </button>
+          <button class="btn menu-btn" onclick="sendCommand('TOOLS')">
+            <i class="bi bi-tools"></i> Tools
+          </button>
+        </div>
+        
+        <!-- Number Pad -->
+        <div class="section-title">NÚMEROS</div>
+        <div class="btn-grid">
+          <button class="btn number-btn" onclick="sendCommand('1')">1</button>
+          <button class="btn number-btn" onclick="sendCommand('2')">2</button>
+          <button class="btn number-btn" onclick="sendCommand('3')">3</button>
+          <button class="btn number-btn" onclick="sendCommand('4')">4</button>
+          <button class="btn number-btn" onclick="sendCommand('5')">5</button>
+          <button class="btn number-btn" onclick="sendCommand('6')">6</button>
+          <button class="btn number-btn" onclick="sendCommand('7')">7</button>
+          <button class="btn number-btn" onclick="sendCommand('8')">8</button>
+          <button class="btn number-btn" onclick="sendCommand('9')">9</button>
+          <button class="btn number-btn" onclick="sendCommand('CONTENTS')">Smart</button>
+          <button class="btn number-btn" onclick="sendCommand('0')">0</button>
+          <button class="btn number-btn" onclick="sendCommand('PANNEL_CHDOWN')">3D</button>
+        </div>
       </div>
     </div>
   </div>
+  
+  <div class="navbar">
+    <div class="nav-item active" data-tab="tab-basic">
+      <i class="bi bi-controller"></i>
+      <span>Básico</span>
+    </div>
+    <div class="nav-item" data-tab="tab-apps">
+      <i class="bi bi-grid-3x3-gap-fill"></i>
+      <span>Apps</span>
+    </div>
+    <div class="nav-item" data-tab="tab-more">
+      <i class="bi bi-three-dots"></i>
+      <span>Mais</span>
+    </div>
+  </div>
+
   <script>
-    const SERVER_URL = 'http://192.168.15.14:5555';
+    // Try to get SERVER_URL from localStorage or use default
+    const DEFAULT_SERVER_URL = 'http://192.168.15.14:5555';
+    let SERVER_URL = localStorage.getItem('server_url') || DEFAULT_SERVER_URL;
+    
+    // Generate QR Code
+    function generateQRCode() {
+      // Get the server URL for sharing
+      const serverUrl = SERVER_URL;
+      document.getElementById('server-url').textContent = serverUrl;
+      
+      // Update input field
+      document.getElementById('server-url-input').value = serverUrl;
+      
+      // Generate QR Code
+      const typeNumber = 4;
+      const errorCorrectionLevel = 'L';
+      const qr = qrcode(typeNumber, errorCorrectionLevel);
+      qr.addData(serverUrl);
+      qr.make();
+      document.getElementById('qrcode').innerHTML = qr.createImgTag(5);
+    }
+    
+    // Add a function to update server URL and regenerate QR code
+    function updateServerUrl(newUrl) {
+      SERVER_URL = newUrl;
+      localStorage.setItem('server_url', SERVER_URL);
+      generateQRCode();
+      
+      // Check connection with new URL
+      checkConnection();
+    }
+    
+    // Update server URL from input field
+    function updateServerUrlFromInput() {
+      const newUrl = document.getElementById('server-url-input').value.trim();
+      if (newUrl) {
+        updateServerUrl(newUrl);
+        updateStatus('URL do servidor atualizada');
+      } else {
+        updateStatus('URL inválida', 'error');
+      }
+    }
+    
+    // Tab switching
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        // Update active tab
+        document.querySelectorAll('.nav-item').forEach(navItem => {
+          navItem.classList.remove('active');
+        });
+        item.classList.add('active');
+        
+        // Show active content
+        const tabId = item.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
     
     async function sendCommand(command) {
       try {
+        updateStatus(`Enviando: ${command}...`);
+        
         const response = await fetch(`${SERVER_URL}/api/tv/command`, {
           method: 'POST',
           headers: {
@@ -181,14 +544,26 @@
       const statusElement = document.getElementById('status');
       statusElement.textContent = message;
       statusElement.style.backgroundColor = type === 'error' ? '#e74c3c' : '#2d2d2d';
+      
+      // Auto-clear status after 3 seconds if not an error
+      if (type !== 'error') {
+        setTimeout(() => {
+          statusElement.textContent = 'Conectado ao servidor';
+          statusElement.style.backgroundColor = '#2d2d2d';
+        }, 3000);
+      }
     }
 
-    // Verificar conexão com o servidor
     async function checkConnection() {
       try {
-        const response = await fetch(SERVER_URL);
+        const response = await fetch(`${SERVER_URL}/api/tv/status`);
         if (response.ok) {
-          updateStatus('Conectado ao servidor');
+          const data = await response.json();
+          if (data.connected) {
+            updateStatus('Conectado à TV');
+          } else {
+            updateStatus('Servidor conectado, TV desconectada', 'error');
+          }
         } else {
           updateStatus('Servidor não responde', 'error');
         }
@@ -197,8 +572,19 @@
       }
     }
 
-    // Verificar conexão inicial
     checkConnection();
+    
+    // Generate QR Code
+    generateQRCode();
+    
+    // Verificar conexão a cada 30 segundos
+    setInterval(checkConnection, 30000);
+
+    // Remover o preventDefault que estava bloqueando os cliques no iOS
+    // ou substituir por uma versão que não bloqueie os cliques
+    document.addEventListener('touchstart', function(e) {
+      // Não faz nada, apenas captura o evento para evitar comportamentos indesejados
+    }, { passive: true });
   </script>
 </body>
 </html>

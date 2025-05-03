@@ -1,6 +1,6 @@
 comnands> :
 
-
+## frist menu
 Key code	Description
 KEY_POWEROFF	Power off
 KEY_UP	Up
@@ -13,10 +13,9 @@ KEY_ENTER	Enter
 KEY_RETURN	Return
 KEY_CH_LIST	Channel List
 KEY_MENU	Menu
-KEY_SOURCE	Source
-KEY_GUIDE	Guide
-KEY_TOOLS	Tools
-KEY_INFO	Info
+
+
+## secound menu 
 KEY_RED	A / Red
 KEY_GREEN	B / Green
 KEY_YELLOW	C / Yellow
@@ -38,3 +37,16 @@ KEY_9	9
 KEY_DTV	TV Source
 KEY_HDMI	HDMI Source
 KEY_CONTENTS	SmartHub
+KEY_SOURCE	Source
+KEY_GUIDE	Guide
+KEY_TOOLS	Tools
+KEY_INFO	Info
+
+
+## tird apps menu 
+
+Aplicativo	App ID Samsung (Tizen)
+Netflix	11101200001
+YouTube	111299001912
+Spotify	3201606009684
+globo play 3201908019022
